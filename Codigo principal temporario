@@ -27,12 +27,14 @@ int main (){
 
     Aluno aluno[MAX];
     char nomeProcurar [100];
-    int opcao,digito=0;
+    int opcao;
     int clientes=0,j,flag = 0;
     char apagar_buffer;
     time_t tempo = time(NULL);
     struct tm *t = localtime(&tempo);
     int anoAtual = t->tm_year+1900;
+    int diaAtual = t->tm_mday;
+    int mesAtual = t->tm_mon + 1; // tenho que somar mais um pq ele vai de 0 a 11
 
 
     printf("___ACADEMIA D2___\n");
@@ -57,7 +59,9 @@ int main (){
 
         for(;;){ 
         flag=0;
+        int digito;
         digito=0;
+
         printf("Digite o telefone do aluno: (Apenas numeros) \n");
          fgets(aluno[clientes].telefone,15,stdin);
         
@@ -143,7 +147,7 @@ int main (){
          for(j=0;j<clientes;j++){
           if(strcasecmp(nomeProcurar,aluno[j].nome)==0){
             printf("Cliente encontrado!!\n");
-            printf("Nome: %s\n",aluno[j].nome);
+            printf("Nome: %s",aluno[j].nome);
             printf("Telefone: %s\n",aluno[j].telefone);
             printf("Ultimo pagamento: %d/%d/%d\n",aluno[j].Pagamento.dia,aluno[j].Pagamento.mes,aluno[j].Pagamento.ano);
             flag=1;
@@ -175,54 +179,37 @@ int main (){
           printf("Cliente nao encontrado!!\n");
           break;
          }else{
-            int diaTemp,mesTemp,anoTemp,contadorDias;
-            contadorDias=0;
+            int diaTemp,mesTemp,anoTemp;
             
-            printf("Digite o dia do novo pagamento: "); //acho que tenho que criar variaveis novas, pra poder validar e ai sim dps atribuir, pq se for errado o valor antigo se perde!!!
+            
+            printf("Digite o dia que esta sendo realizado o novo pagamento: "); //acho que tenho que criar variaveis novas, pra poder validar e ai sim dps atribuir, pq se for errado o valor antigo se perde!!!
             scanf("%d",&diaTemp);
-            if(diaTemp>31 || diaTemp<1){
+            if(diaTemp!=diaAtual){
               printf("Digitado errado!!\n");
-              flag=1;
-             }else{
-              flag=0;
-               contadorDias++;
-             }
-             if(flag==1){
               flag=0;
               break;
              }
         
-            printf("Digite o mes do novo pagamento: ");
+            printf("Digite o mes que esta sendo realizado o novo pagamento: ");
             scanf("%d",&mesTemp);
-            if(mesTemp>12 || mesTemp<1){
+            if(mesTemp!=mesAtual){
               printf("Digitado errado!!\n");
-              flag=1;
-             }else{
-              contadorDias++;
-             }
-             if(flag==1){
               flag=0;
               break;
              }
-            printf("Digite o ano do novo pagamento: ");
+            printf("Digite o ano que esta sendo realizado o novo pagamento: ");
             scanf("%d",&anoTemp);
-            if(anoTemp>anoAtual || anoTemp<aluno[j].Pagamento.ano){
+            if(anoTemp!=anoAtual){
               printf("Digitado errado!!\n");
-              flag=1;
-             }else{
-              contadorDias++;
-             }
-             
-             if(flag==1){
-              flag=0;
               break;
              }
 
-             if(contadorDias==3){
+             
               aluno[j].Pagamento.dia=diaTemp;
               aluno[j].Pagamento.mes=mesTemp;
               aluno[j].Pagamento.ano=anoTemp;
-             }
+              flag=0;
+           
             break;
          
         }
@@ -231,9 +218,35 @@ int main (){
         break;
 
         case 4:
+        {
+        int dias_passados;
+         struct tm data = {0};
+         struct tm dataAtual = {0};
+         dataAtual.tm_mday=diaAtual;
+         dataAtual.tm_mon=mesAtual-1;
+         dataAtual.tm_year=anoAtual-1900;
+         time_t Pay_Cliente,Hoje;
+         Hoje = mktime(&dataAtual);
+         
+          printf("Os clientes devedores são: \n");
+           for(j=0;j<clientes;j++){
+            data.tm_mday=aluno[j].Pagamento.dia;
+            data.tm_mon=aluno[j].Pagamento.mes-1;
+            data.tm_year=aluno[j].Pagamento.ano-1900;
 
-        break;
+            Pay_Cliente = mktime(&data);
+            
 
+            dias_passados = (Hoje-Pay_Cliente)/86400;
+            
+             if(dias_passados>30){
+              printf("Nome: %s",aluno[j].nome);
+              printf("Telefone: %s\n",aluno[j].telefone);
+              printf("Ultimo pagamento: %d/%d/%d\n",aluno[j].Pagamento.dia,aluno[j].Pagamento.mes,aluno[j].Pagamento.ano);
+             }
+          }
+         break;
+        }
         case 5:
 
         break;
