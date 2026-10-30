@@ -145,7 +145,7 @@ int main (){
          fgets(nomeProcurar,100,stdin);
 
          for(j=0;j<clientes;j++){
-          if(strcasecmp(nomeProcurar,aluno[j].nome)==0){
+          if(strcasecmp(nomeProcurar,aluno[j].nome)==0){ //transformar em funcao, tipo BuscarAluno, ja que se repete case 2 4 e 5, fica mais facil !!!!!!!!!!!!!!!!!!!!!!!!!!!
             printf("Cliente encontrado!!\n");
             printf("Nome: %s",aluno[j].nome);
             printf("Telefone: %s\n",aluno[j].telefone);
