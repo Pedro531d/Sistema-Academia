@@ -5,13 +5,15 @@
 
 #define MAX 100
 
+
+
 struct DataPagamento{
         int dia;
         int mes;
         int ano;
     };
 
-    typedef struct DataPagamento DataPagamento;
+typedef struct DataPagamento DataPagamento;
 
 struct Aluno{
     char nome[100];
@@ -20,6 +22,16 @@ struct Aluno{
 };
 
 typedef struct Aluno Aluno;
+
+int BuscarAluno(int clientes,char nomeProcurar[100],Aluno aluno[]){
+  int jfuncao;
+  for(jfuncao=0;jfuncao<clientes;jfuncao++){
+       if(strcasecmp(nomeProcurar,aluno[jfuncao].nome)==0){ 
+            return jfuncao;
+          }
+     }
+     return -1;
+  }
 
 
 
@@ -35,13 +47,14 @@ int main (){
     int anoAtual = t->tm_year+1900;
     int diaAtual = t->tm_mday;
     int mesAtual = t->tm_mon + 1; // tenho que somar mais um pq ele vai de 0 a 11
+    int achado;
 
 
     printf("___ACADEMIA D2___\n");
     for(;;){
 
      printf("    __MENU__\n");
-     printf("1 - Cadastrar Aluno\n2 - Listar/buscar aluno\n3 - Registrar pagamento\n4 - Devedores\n5 - Deletar cadastro\n6 - Fechar programa\n ");
+     printf("1 - Cadastrar Aluno\n2 -Buscar aluno\n3 - Registrar pagamento\n4 - Devedores\n5 - Deletar cadastro\n6 - Fechar programa\n ");
      
      printf("Digite a opcao: \n");
       scanf("%d",&opcao);
@@ -141,26 +154,22 @@ int main (){
 
         case 2:
         flag=0;
+        
+        
         printf("Digite o nome do aluno:\n");
          fgets(nomeProcurar,100,stdin);
 
-         for(j=0;j<clientes;j++){
-          if(strcasecmp(nomeProcurar,aluno[j].nome)==0){ //transformar em funcao, tipo BuscarAluno, ja que se repete case 2 4 e 5, fica mais facil !!!!!!!!!!!!!!!!!!!!!!!!!!!
-            printf("Cliente encontrado!!\n");
-            printf("Nome: %s",aluno[j].nome);
-            printf("Telefone: %s\n",aluno[j].telefone);
-            printf("Ultimo pagamento: %d/%d/%d\n",aluno[j].Pagamento.dia,aluno[j].Pagamento.mes,aluno[j].Pagamento.ano);
-            flag=1;
+         achado=BuscarAluno(clientes,nomeProcurar,aluno);
+         
+         if(achado!=-1){
+          printf("Cliente encontrado!!\n");
+            printf("Nome: %s",aluno[achado].nome);
+            printf("Telefone: %s\n",aluno[achado].telefone);
+            printf("Ultimo pagamento: %d/%d/%d\n",aluno[achado].Pagamento.dia,aluno[achado].Pagamento.mes,aluno[achado].Pagamento.ano);
             break;
-          }
-         }
-
-         if(flag==0){
+         }else{
           printf("Cliente nao encontrado!!\n");
-           
          }
-
-         flag = 0;
         break;
 
         case 3:
@@ -168,25 +177,16 @@ int main (){
         printf("Digite o nome do aluno:\n");
          fgets(nomeProcurar,100,stdin);
 
-         for(j=0;j<clientes;j++){
-          if(strcasecmp(nomeProcurar,aluno[j].nome)==0){
-            flag=1;
-            break;
-          }
-        }
-         
-         if(flag==0){
-          printf("Cliente nao encontrado!!\n");
-          break;
-         }else{
-            int diaTemp,mesTemp,anoTemp;
+          achado=BuscarAluno(clientes,nomeProcurar,aluno);
+
+         if(achado!=-1){
+          int diaTemp,mesTemp,anoTemp;
             
             
             printf("Digite o dia que esta sendo realizado o novo pagamento: "); //acho que tenho que criar variaveis novas, pra poder validar e ai sim dps atribuir, pq se for errado o valor antigo se perde!!!
             scanf("%d",&diaTemp);
             if(diaTemp!=diaAtual){
               printf("Digitado errado!!\n");
-              flag=0;
               break;
              }
         
@@ -194,28 +194,26 @@ int main (){
             scanf("%d",&mesTemp);
             if(mesTemp!=mesAtual){
               printf("Digitado errado!!\n");
-              flag=0;
+
               break;
              }
             printf("Digite o ano que esta sendo realizado o novo pagamento: ");
             scanf("%d",&anoTemp);
             if(anoTemp!=anoAtual){
               printf("Digitado errado!!\n");
+
               break;
              }
 
-             
-              aluno[j].Pagamento.dia=diaTemp;
-              aluno[j].Pagamento.mes=mesTemp;
-              aluno[j].Pagamento.ano=anoTemp;
-              flag=0;
+              aluno[achado].Pagamento.dia=diaTemp;
+              aluno[achado].Pagamento.mes=mesTemp;
+              aluno[achado].Pagamento.ano=anoTemp;
            
             break;
-         
-        }
-
-         
-        break;
+         }else{
+          printf("Cliente nao encontrado!!\n");
+          break;
+         }
 
         case 4:
         {
@@ -248,11 +246,29 @@ int main (){
          break;
         }
         case 5:
+        printf("Digite o nome do aluno que deseja apagar o cadastro: ");
+         fgets(nomeProcurar,100,stdin);
 
+        achado = BuscarAluno(clientes,nomeProcurar,aluno);
+
+        if(achado!=-1){
+
+           for(j=achado;j<clientes-1;j++){
+            strcpy(aluno[j].nome,aluno[j+1].nome);
+            strcpy(aluno[j].telefone,aluno[j+1].telefone);
+            aluno[j].Pagamento.dia = aluno[j+1].Pagamento.dia;
+            aluno[j].Pagamento.mes = aluno[j+1].Pagamento.mes;
+            aluno[j].Pagamento.ano = aluno[j+1].Pagamento.ano;
+           }
+           clientes--;
+
+        }else{
+          printf("Cliente nao encontrado!!!\n");
+        }
         break;
 
         case 6:
-        printf("Programa encerrado!!");
+        printf("Programa encerrado!!\n");
         flag=1;
         break;
 
