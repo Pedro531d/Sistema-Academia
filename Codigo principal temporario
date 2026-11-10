@@ -2,9 +2,10 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <stdlib.h>
 
 #define MAX 100
-
+FILE *Dados;
 
 
 struct DataPagamento{
@@ -33,6 +34,29 @@ int BuscarAluno(int clientes,char nomeProcurar[100],Aluno aluno[]){
      return -1;
   }
 
+void SalvarAluno(int clientes,Aluno aluno[]){
+  Dados = fopen("dados.txt","wb");
+  if(Dados == NULL){
+    printf("Erro ao salvar os dados!!");
+    exit(1);
+  }
+  fwrite(aluno,sizeof(Aluno),clientes,Dados);
+  fclose(Dados);
+
+}
+
+int CarregarALuno(Aluno aluno[]){
+  int f;
+  Dados = fopen("dados.txt","rb");
+  if(Dados == NULL){
+    return 0;
+  }
+
+  f=fread(aluno,sizeof(Aluno),MAX,Dados);
+  fclose(Dados);
+  return f;
+}
+
 
 
 int main (){
@@ -40,7 +64,7 @@ int main (){
     Aluno aluno[MAX];
     char nomeProcurar [100];
     int opcao;
-    int clientes=0,j,flag = 0;
+    int clientes,j,flag = 0;
     char apagar_buffer;
     time_t tempo = time(NULL);
     struct tm *t = localtime(&tempo);
@@ -48,13 +72,15 @@ int main (){
     int diaAtual = t->tm_mday;
     int mesAtual = t->tm_mon + 1; // tenho que somar mais um pq ele vai de 0 a 11
     int achado;
+    
 
+    clientes = CarregarALuno(aluno);
 
     printf("___ACADEMIA D2___\n");
     for(;;){
 
      printf("    __MENU__\n");
-     printf("1 - Cadastrar Aluno\n2 -Buscar aluno\n3 - Registrar pagamento\n4 - Devedores\n5 - Deletar cadastro\n6 - Fechar programa\n ");
+     printf("1 - Cadastrar Aluno\n2 - Buscar aluno\n3 - Registrar pagamento\n4 - Devedores\n5 - Deletar cadastro\n6 - Fechar programa\n ");
      
      printf("Digite a opcao: \n");
       scanf("%d",&opcao);
@@ -102,12 +128,14 @@ int main (){
             break;
           }
          }
-         
-         
+
          if(flag==0){
             break;
          }
         } 
+
+         
+        
         for(;;){
         flag=0;
         printf("Digite o dia: ");
@@ -150,6 +178,7 @@ int main (){
         }
 
          clientes++;
+         SalvarAluno(clientes,aluno); // isso daqui eu usei pra salvar os dados novos no arquivo!!!
         break;
 
         case 2:
@@ -208,6 +237,8 @@ int main (){
               aluno[achado].Pagamento.dia=diaTemp;
               aluno[achado].Pagamento.mes=mesTemp;
               aluno[achado].Pagamento.ano=anoTemp;
+
+              SalvarAluno(clientes,aluno);
            
             break;
          }else{
@@ -261,6 +292,8 @@ int main (){
             aluno[j].Pagamento.ano = aluno[j+1].Pagamento.ano;
            }
            clientes--;
+           SalvarAluno(clientes,aluno);
+           printf("Aluno apagado!!!\n");
 
         }else{
           printf("Cliente nao encontrado!!!\n");
