@@ -166,7 +166,7 @@ int main (){
           flag=0;
           printf("Digite o ano: ");
            scanf("%d",&aluno[clientes].Pagamento.ano);
-            if(aluno[clientes].Pagamento.ano>anoAtual || aluno[clientes].Pagamento.ano<2020 ){
+            if(aluno[clientes].Pagamento.ano>anoAtual || aluno[clientes].Pagamento.ano<2025 ){
              printf("Digitado errado!!\n");
              flag=1;
          }
